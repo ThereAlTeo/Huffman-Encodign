@@ -424,6 +424,7 @@ huffmanNODO* buildHuffmanTree()
 	return extractMin(array, &heapsize);
 }
 
+
 /* builds the table with the bits for each letter. 1 stands for binary 0 and 2 for binary 1 (used to facilitate arithmetic)*/
 void createTable(huffmanNODO *tree, char* codeTable[], char *Code, int Level) {
 	
@@ -576,9 +577,6 @@ int decompressHuffman(NODO* dictionary, char* fileInput, huffmanNODO* tree) {
 			if (def == NULL) return NULL;
 
 			char auxChar = getCharByHuffman(tree, temp, &j);
-			
-			if (auxChar == '\n')
-				break;
 
 			def[k] = auxChar;
 			def[++k] = '\0';
