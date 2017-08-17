@@ -68,16 +68,24 @@ NODO* createFromFile(char* nameFile)
 
 void printDictionary(NODO* dictionary)
 {
-	for (int i = 0; i < NUM_ELEMENTI; i++)
+	if (dictionary != NULL)
 	{
-		TipoListaChaining temp = dictionary[i].TestaLis;
+		printf("\n\n");
 
-		while (temp != NULL)
+		for (int i = 0; i < NUM_ELEMENTI; i++)
 		{
-			printf("\"%s\":[%s]\n", temp->word, temp->def == NULL ? "(null)" : temp->def);
-			temp = temp->next;
+			TipoListaChaining temp = dictionary[i].TestaLis;
+
+			while (temp != NULL)
+			{
+				printf("\"%s\":[%s]\n", temp->word, temp->def == NULL ? "(null)" : temp->def);
+				temp = temp->next;
+			}
 		}
 	}
+	else
+		printf("\n\n\tDizionario VUOTO !!!\n\n");
+	
 }
 
 int countWord(NODO* dictionary)
