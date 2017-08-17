@@ -26,7 +26,7 @@ typedef struct {
 	int countWord;
 }NODO;
 
-void inizializzazioneTabellaHash(NODO* dictionary);
+int inizializzazioneTabellaHash(NODO* dictionary);
 
 /*
 Input:

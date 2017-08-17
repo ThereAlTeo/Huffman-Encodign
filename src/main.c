@@ -9,7 +9,7 @@
 /**
 
 */
-void getHuffman(NODO* dictionary, huffmanNODO *tree)
+void getCompressHuffman(NODO* dictionary, huffmanNODO *tree)
 {
 	if(tree == NULL)
 		tree = buildHuffmanTree();
@@ -19,15 +19,44 @@ void getHuffman(NODO* dictionary, huffmanNODO *tree)
 
 	createTable(tree, codetable, code, Level);
 
-	compressHuffman(dictionary, returnWord("Digitare l'indirizzo nel quale salvare il dizionario"), codetable);
+	(compressHuffman(dictionary, returnWord("Digitare l'indirizzo nel quale salvare il dizionario"), codetable) == UNDEFINED) ? PRNT_ERROR : PRNT_NOT_ERROR;
+}
+
+void getDecompressHuffman(NODO* dictionary, huffmanNODO *tree)
+{
+	if (tree == NULL)
+		tree = buildHuffmanTree();
+	
+	dictionary = (NODO*) malloc(NUM_ELEMENTI * sizeof(NODO));
+
+	(decompressHuffman(dictionary, returnWord("Digitare l'indirizzo del file"), tree) == UNDEFINED) ? PRNT_ERROR : PRNT_NOT_ERROR;
 }
 
 /**
 
 */
-void getImportDictionary(NODO* dictionary)
+void getImportDictionary(NODO* dictionary, huffmanNODO *tree)
 {
+	int scelta = 0;
+	bool check = false;
 
+	do
+	{
+		CLEAR;
+		if(check == true)
+			warning("WARNING: Valore non valido. Si prega di inserirlo correttamente. ");
+
+		printf("\n  1) Utilizzare la funzione importDictionary .\n  2) Utilizzare la codifca di HUFFMAN.\n\n--> ");
+		scanf("%3d", &scelta);
+		fflush(stdin);
+
+		check = true;
+	} while (scelta < 1 || scelta > 2);
+
+	if (scelta == 1)
+		dictionary = importDictionary(returnWord("Digitare l'indirizzo del file"));
+	else
+		getDecompressHuffman(dictionary, tree);
 }
 
 /*
@@ -36,8 +65,6 @@ void getImportDictionary(NODO* dictionary)
 void primaryFunction(NODO* dictionary)
 {
 	char* stringTemp;
-	srand(time(NULL));
-
 	dictionary = createFromFile("fileTest1617.txt");
 
 	printf("\nSTAMPA DEL DIZIONARIO:\n");
@@ -77,7 +104,7 @@ void primaryFunction(NODO* dictionary)
 /**
 
 */
-void run()
+int run()
 {
 	NODO* dictionary = NULL;
 	huffmanNODO *tree = NULL;
@@ -87,8 +114,15 @@ void run()
 
 	if (checkRequest("Iniziare l'esecuzione del programma partendo dalle SOLE funzionalità base") == true)
 		primaryFunction(dictionary);
-	else if(checkRequest("Importare parole e/o definizioni da file") == true)
-		getImportDictionary(dictionary);
+	else if(checkRequest("Importare parole e relative definizioni da file") == true)
+		getImportDictionary(dictionary, tree);
+
+	if(dictionary == NULL)
+	{
+		dictionary = (NODO*)malloc(NUM_ELEMENTI * sizeof(NODO));
+
+		if(inizializzazioneTabellaHash(dictionary) == ERROR_FIND) return ERROR_FIND;
+	}
 
 	if (checkRequest("Proseguire eseguendo tutte le funzioni implementate") == true)
 	{
@@ -100,9 +134,9 @@ void run()
 					endMethod(); break;
 				case 2: printf("\n\nIl numero di parole contenute nel dizionario e': %d\n\n", countWord(dictionary));
 					endMethod(); break;
-				case 3: insertWord(&dictionary, returnWord("Digitare la parola da inserire"));
+				case 3: (insertWord(&dictionary, returnWord("Digitare la parola da inserire")) == NOT_ERROR) ? PRNT_NOT_ERROR : PRNT_ERROR;
 					endMethod(); break;
-				case 4: cancWord(&dictionary, returnWord("Digitare la parola da cancellare"));
+				case 4: (cancWord(&dictionary, returnWord("Digitare la parola da cancellare")) == NOT_ERROR) ? PRNT_NOT_ERROR : PRNT_ERROR;
 					endMethod(); break;
 				case 5: {
 					unsigned int index;
@@ -120,16 +154,23 @@ void run()
 
 					endMethod(); break;
 				}
-				case 6: insertDef(dictionary, returnWord("Digitare la parola per la quale si deve inserire la definizione"), returnWord("Digitare la definizione"));
+				case 6: (insertDef(dictionary, returnWord("Digitare la parola per la quale si deve inserire la definizione"), returnWord("Digitare la definizione")) == NOT_ERROR) ? PRNT_NOT_ERROR : PRNT_ERROR;
 					endMethod(); break;
 				case 7: searchDef(dictionary, returnWord("Digitare la parola per la quale si deve ricercare la definizione"));
 					endMethod(); break;
-				case 8: saveDictionary(dictionary, returnWord("Digitare l'indirizzo nel quale salvare il dizionario"));
+				case 8: (saveDictionary(dictionary, returnWord("Digitare l'indirizzo nel quale salvare il dizionario")) == UNDEFINED) ? PRNT_ERROR: PRNT_NOT_ERROR;
 					endMethod(); break;
-				case 9: getHuffman(dictionary, tree);
+				case 9: getCompressHuffman(dictionary, tree);
 					endMethod(); break;
-				case 10: 
+				case 10:{
+					char* primoRis = NULL , secondoRis = NULL , terzoRis = NULL;
+
+					searchAdvance(dictionary, returnWord("Digitare la parola per la quale si deve efettuare la ricerca avanzata"), &primoRis, &secondoRis, &terzoRis);
+					
+					printf("Le tre parole simili a quela ricercata sono\n1) %s\n2)%s\n%s\n\n", primoRis, secondoRis, terzoRis);
+
 					endMethod(); break;
+				}
 				case 11: checkExit = true;
 					break;
 			}
@@ -138,16 +179,15 @@ void run()
 		} while(!checkExit);
 	}
 
-	warning("\t\tARRIVEDERCI ");
+	return NOT_ERROR;
 }
 
 int main()
 {
 	run();
-	
+
+	warning("\t\tARRIVEDERCI ");
 	endMethod();
-
-
 
 	return 0;
 }

@@ -1,4 +1,7 @@
 #define CLEAR system("cls")
+#define PRNT_NOT_ERROR warning("\n\nOPERAZIONE ESEGUITA CON SUCCESSO ")
+#define PRNT_ERROR warning("\n\nOPERAZIONE NON ESEGUITA CON SUCCESSO ")
+#define FREE_BUFFER while(getchar() != '\n')
 
 /**
 	Allo scopo di rendere piu' leggibile in codice, si scrive l'operazione una sola volta.

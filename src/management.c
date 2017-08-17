@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "management.h"
 
@@ -17,8 +18,7 @@ void warning(char valore[])
 	CLEAR;
 	printf("\n%s", valore);
 
-	for (i = 0; i < 3; i++)
-	{
+	for(i = 0; i < 3; i++){
 		stop(750);
 		printf(". ");
 	}
@@ -41,12 +41,12 @@ bool checkRequest(char valore[])
 
 	do
 	{
-		if (check == true)
+		if(check == true)
 			warning("WARNING: Carattere non valido. Si prega di inserirlo correttamente. ");
-
+		
 		printf("\n\n%s?? (S/N)\n -->  ", valore);
 		valMenuRet = getchar();
-		fflush(stdin);
+		FREE_BUFFER;
 
 		check = true;
 	} while ((valMenuRet != 'S' && valMenuRet != 's') && (valMenuRet != 'N' && valMenuRet != 'n'));
@@ -59,16 +59,28 @@ bool checkRequest(char valore[])
 
 char* returnWord(char valore[])
 {
-	int ch;
+	int ch, i = 0;
+	char* word = NULL;
 
 	printf("\n\n%s: ", valore);
-	do {
+
+	do{
 		ch = getchar();
-		if (j < MAX_CHAR_NOME_COGN)
-			arrayGestioneStudenti[index].nome[j++] = ch;
-	} while (ch != '\n');
-	arrayGestioneStudenti[index].nome[j] = '\0';
+
+		if (word == NULL)
+			word = (char*)malloc(sizeof(char));
+		else
+			word = (char*) realloc(word, (i + 1)*sizeof(char));
+		
+		if (word == NULL) return NULL;
+
+		word[i] = ch;
+	}while (ch != '\n');
+
+	word[--i] = '\0';
 	fflush(stdin);
+
+	return word;
 }
 
 int menuIniziale()
@@ -84,7 +96,7 @@ int menuIniziale()
 
 		printf("\n\t\tMENU'\n  1) Visualizzare le parole contenute nel dizionario.\n  2) Visualizzare il numero di parole contenute nel dizionario.\n  3) Inserisci nuova parola nel dizionario.\n  ");
 		printf("4) Cancella parola dal dizionario.\n  5) Visualizzare la parola -iesima.\n  6) Inserisci definizione relativa ad una parola.\n  ");
-		printf("7) Visualizza definizione relativa ad una parola.\n  8) Salvataggio su file del dizionario (CLASSICO).\n  9) Salvataggio su file del dizionario (CODIFICA DI HUFFMAN).\n  10) Visualizzare risultati della ricerca avanzata.\n 11) USCIRE.\n\n--> ");
+		printf("7) Visualizza definizione relativa ad una parola.\n  8) Salvataggio su file del dizionario (CLASSICO).\n  9) Salvataggio su file del dizionario (CODIFICA DI HUFFMAN).\n  10) Visualizzare risultati della ricerca avanzata.\n  11) USCIRE.\n\n--> ");
 		scanf("%3d", &scelta);
 		fflush(stdin);
 
