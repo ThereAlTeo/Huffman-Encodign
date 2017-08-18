@@ -6,36 +6,19 @@
 #include "lib1617.h"
 #include "management.h"
 
-/**
-
-*/
-void getCompressHuffman(NODO* dictionary, huffmanNODO *tree)
+void getDecompressHuffman(NODO** dictionary, huffmanNODO** tree)
 {
-	if(tree == NULL)
-		tree = buildHuffmanTree();
-	
-	char *codetable[NUM_ELEMENTI], *code = (char*)malloc(sizeof(char));
-	int Level = 0;
+	*dictionary = (NODO*) malloc(NUM_ELEMENTI * sizeof(NODO));
 
-	createTable(tree, codetable, code, Level);
+	inizializzazioneTabellaHash(*dictionary);
 
-	(compressHuffman(dictionary, returnWord("Digitare l'indirizzo nel quale salvare il dizionario"), codetable) == UNDEFINED) ? PRNT_ERROR : PRNT_NOT_ERROR;
-}
-
-void getDecompressHuffman(NODO* dictionary, huffmanNODO *tree)
-{
-	if (tree == NULL)
-		tree = buildHuffmanTree();
-	
-	dictionary = (NODO*) malloc(NUM_ELEMENTI * sizeof(NODO));
-
-	(decompressHuffman(dictionary, returnWord("Digitare l'indirizzo del file"), tree) == UNDEFINED) ? PRNT_ERROR : PRNT_NOT_ERROR;
+	(decompressHuffman(*dictionary, returnWord("Digitare l'indirizzo del file"), *tree) == UNDEFINED) ? PRNT_ERROR : PRNT_NOT_ERROR;
 }
 
 /**
 
 */
-void getImportDictionary(NODO* dictionary, huffmanNODO *tree)
+void getImportDictionary(NODO** dictionary, huffmanNODO** tree)
 {
 	int scelta = 0;
 	bool check = false;
@@ -48,13 +31,13 @@ void getImportDictionary(NODO* dictionary, huffmanNODO *tree)
 
 		printf("\n  1) Utilizzare la funzione importDictionary .\n  2) Utilizzare la codifca di HUFFMAN.\n\n--> ");
 		scanf("%3d", &scelta);
-		fflush(stdin);
+		FREE_BUFFER;
 
 		check = true;
 	} while (scelta < 1 || scelta > 2);
 
 	if (scelta == 1)
-		dictionary = importDictionary(returnWord("Digitare l'indirizzo del file"));
+		*dictionary = importDictionary(returnWord("Digitare l'indirizzo del file"));
 	else
 		getDecompressHuffman(dictionary, tree);
 }
@@ -62,10 +45,11 @@ void getImportDictionary(NODO* dictionary, huffmanNODO *tree)
 /*
 
 */
-void primaryFunction(NODO* dictionary)
+void primaryFunction(NODO** aux)
 {
 	char* stringTemp;
-	dictionary = createFromFile("fileTest1617.txt");
+	NODO* dictionary = createFromFile("fileTest1617.txt");
+	*aux = dictionary;
 
 	printf("\nSTAMPA DEL DIZIONARIO:\n");
 	printDictionary(dictionary);
@@ -107,15 +91,19 @@ void primaryFunction(NODO* dictionary)
 int run()
 {
 	NODO* dictionary = NULL;
-	huffmanNODO *tree = NULL;
+	huffmanNODO *tree = buildHuffmanTree();
 	bool checkExit = false;
+	char* codetable[NUM_ELEMENTI], *code = (char*)malloc(sizeof(char));
+	int Level = 0;
+
+	createTable(tree, codetable, code, Level);
 
 	warning("\t\tWELCOME ");
 
-	if (checkRequest("Iniziare l'esecuzione del programma partendo dalle SOLE funzionalità base") == true)
-		primaryFunction(dictionary);
+	if (checkRequest("Iniziare l'esecuzione del programma partendo dalle SOLE funzionalita' base") == true)
+		primaryFunction(&dictionary);
 	else if(checkRequest("Importare parole e relative definizioni da file") == true)
-		getImportDictionary(dictionary, tree);
+		getImportDictionary(&dictionary, &tree);
 
 	if(dictionary == NULL)
 	{
@@ -160,10 +148,10 @@ int run()
 					endMethod(); break;
 				case 8: (saveDictionary(dictionary, returnWord("Digitare l'indirizzo nel quale salvare il dizionario")) == UNDEFINED) ? PRNT_ERROR: PRNT_NOT_ERROR;
 					endMethod(); break;
-				case 9: getCompressHuffman(dictionary, tree);
+				case 9:(compressHuffman(dictionary, returnWord("Digitare l'indirizzo nel quale salvare il dizionario"), codetable) == UNDEFINED) ? PRNT_ERROR : PRNT_NOT_ERROR;
 					endMethod(); break;
 				case 10:{
-					char* primoRis = NULL , secondoRis = NULL , terzoRis = NULL;
+					char *primoRis, *secondoRis, *terzoRis;
 
 					searchAdvance(dictionary, returnWord("Digitare la parola per la quale si deve efettuare la ricerca avanzata"), &primoRis, &secondoRis, &terzoRis);
 					
@@ -178,17 +166,15 @@ int run()
 			CLEAR;
 		} while(!checkExit);
 	}
-
+	
 	return NOT_ERROR;
 }
 
 int main()
 {
 	run();
-
-	warning("\t\tARRIVEDERCI ");
 	endMethod();
-
+	warning("\t\tARRIVEDERCI ");
+	
 	return 0;
 }
-

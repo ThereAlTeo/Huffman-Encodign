@@ -61,7 +61,7 @@ char* returnWord(char valore[])
 {
 	int ch, i = 0;
 	char* word = NULL;
-
+	
 	printf("\n\n%s: ", valore);
 
 	do{
@@ -74,11 +74,10 @@ char* returnWord(char valore[])
 		
 		if (word == NULL) return NULL;
 
-		word[i] = ch;
+		word[i++] = ch;
 	}while (ch != '\n');
 
 	word[--i] = '\0';
-	fflush(stdin);
 
 	return word;
 }
@@ -98,7 +97,7 @@ int menuIniziale()
 		printf("4) Cancella parola dal dizionario.\n  5) Visualizzare la parola -iesima.\n  6) Inserisci definizione relativa ad una parola.\n  ");
 		printf("7) Visualizza definizione relativa ad una parola.\n  8) Salvataggio su file del dizionario (CLASSICO).\n  9) Salvataggio su file del dizionario (CODIFICA DI HUFFMAN).\n  10) Visualizzare risultati della ricerca avanzata.\n  11) USCIRE.\n\n--> ");
 		scanf("%3d", &scelta);
-		fflush(stdin);
+		FREE_BUFFER;
 
 		check = true;
 	} while (scelta < 1 || scelta > 11);

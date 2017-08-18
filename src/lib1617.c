@@ -153,12 +153,12 @@ int insertWord(NODO** d, char* word)
 			return NOT_ERROR;
 		}
 		else if (strcmp(word, temp->word) == 0) 
-			return ERROR_FIND;
+			return UNDEFINED;
 
 		while (temp->next != NULL && strcmp(word, getWord(temp->next)) > 0)
 			temp = temp->next;
 
-		if (temp->next != NULL && strcmp(word, getWord(temp->next)) == 0) return ERROR_FIND;
+		if (temp->next != NULL && strcmp(word, getWord(temp->next)) == 0) return UNDEFINED;
 
 		nuovo->next = temp->next;
 		nuovo->prec = temp;
@@ -318,20 +318,20 @@ NODO* importDictionary(char* fileInput)
 {
 	NODO* dictionary = (NODO*) malloc(NUM_ELEMENTI * sizeof(NODO));
 	FILE* file = fopen(fileInput, "r");
+	char* temp = (char*)malloc(MAX_STRING * sizeof(char));
 
-	if (inizializzazioneTabellaHash(dictionary) == ERROR_FIND || file == NULL) return NULL;
+	if (inizializzazioneTabellaHash(dictionary) == ERROR_FIND || file == NULL || temp == NULL) return NULL;
 
-	while (feof(file) != EOF)
+	while (fgets(temp, MAX_STRING, file) != NULL)
 	{
 		char* word = NULL;
 		char* def = NULL;
-		char* temp = NULL;
 		int i = 1, j = 0;
 		bool check = true;
 
-		if (fgets(temp, MAX_STRING, file) == NULL)
-			return NULL;
-
+		if (strlen(temp) < MAX_STRING)
+			temp[strlen(temp) - 1] = '\0';
+		
 		while (temp[i] != '"')
 		{
 			if (word == NULL)
@@ -342,19 +342,16 @@ NODO* importDictionary(char* fileInput)
 			if (word == NULL) return NULL;
 
 			word[i - 1] = temp[i];
-
-			i++;
+			word[i++] = '\0';
 		}
 
 		insertWord(&dictionary, word);
 
 		i += 4;
 
-		while (temp[i] != ']')
-		{
-			if (temp[i + 1] == '(')	//definizione = NULL, usciamo
-			{
-				check = false;
+		do{
+			if (temp[i + 1] == '(') {	//definizione = NULL, usciamo
+				check = false; 
 				break;
 			}
 
@@ -365,11 +362,9 @@ NODO* importDictionary(char* fileInput)
 
 			if (def == NULL) return NULL;
 
-			def[j] = temp[i];
-
-			i++;
-			j++;
-		}
+			def[j] = temp[++i];
+			def[++j] = '\0';
+		} while (temp[i + 1] != ']');
 
 		if (check == true)
 			insertDef(dictionary, word, def);
@@ -435,15 +430,14 @@ huffmanNODO* buildHuffmanTree()
 }
 
 /* builds the table with the bits for each letter. 1 stands for binary 0 and 2 for binary 1 (used to facilitate arithmetic)*/
-void createTable(huffmanNODO *tree, char* codeTable[], char *Code, int Level) {
+void createTable(huffmanNODO *tree, char* codeTable[], char* Code, int Level) {
 	
-	if (tree->left == NULL && tree->right == NULL)
-	{
-		codeTable[(int)tree->letter] = (char*)malloc(strlen(Code) * sizeof(char));
+	if (tree->left == NULL && tree->right == NULL) {
+		codeTable[(int) tree->letter] = (char*) malloc(strlen(Code) * sizeof(char));
 
-		if (codeTable[(int)tree->letter] == NULL) return NULL;
+		if (codeTable[(int) tree->letter] == NULL) return NULL;
 
-		strcpy(codeTable[(int)tree->letter], Code);
+		strcpy(codeTable[(int) tree->letter], Code);
 	}
 	else {
 		if (Code == NULL)
@@ -452,13 +446,13 @@ void createTable(huffmanNODO *tree, char* codeTable[], char *Code, int Level) {
 			Code = (char*)realloc(Code, (Level + 1) * sizeof(char));
 
 		if (Code == NULL) return NULL;
-		
+
 		Code[Level] = '0';
-		Code[Level+1] = '\0';
-		createTable(tree->left, codeTable, Code, Level+1);
+		Code[Level + 1] = '\0';
+		createTable(tree->left, codeTable, Code, Level + 1);
 		Code[Level] = '1';
 		Code[Level + 1] = '\0';
-		createTable(tree->right, codeTable, Code, Level+1);
+		createTable(tree->right, codeTable, Code, Level + 1);
 	}
 }
 
@@ -494,8 +488,8 @@ int compressHuffman(NODO* dictionary, char* fileOutput, char* codeTable[]) {
 				for (int j = 0; j < strlen(temp->def); j++) {
 					if (temp->def[j] != ' ')
 					{
-						compressedBits += strlen(codeTable[((int)temp->def[j]) - MOD_ASCII_CODE]);
-						fprintf(out, "%s", codeTable[((int)temp->def[j]) - MOD_ASCII_CODE]);
+						compressedBits += strlen(codeTable[((int) temp->def[j]) - MOD_ASCII_CODE]);
+						fprintf(out, "%s", codeTable[((int) temp->def[j]) - MOD_ASCII_CODE]);
 					}
 					else
 					{
@@ -513,9 +507,9 @@ int compressHuffman(NODO* dictionary, char* fileOutput, char* codeTable[]) {
 	fclose(out);
 
 	//Visualizzare a monitor !!!
-	printf("Original bits = %d \n", originalBits * BYTE);
+	printf("\n\n\nOriginal bits = %d \n", originalBits * BYTE);
 	printf("Compressed bits = %d \n", compressedBits);
-	printf("Saved %.5f\% of memory \n", ((float)compressedBits / (originalBits * BYTE)) * 100);
+	printf("Saved %.5f\% of memory \n", ((float) compressedBits / (originalBits * BYTE)) * 100);
 
 	return NOT_ERROR;
 }
@@ -524,7 +518,7 @@ char getCharByHuffman(huffmanNODO* tree, char* temp, int* index)
 {
 	if (tree->left == NULL && tree->right == NULL) {
 		if (tree->letter == NUM_ELEMENTI)
-			return (char) 32;
+			return ' ';
 		else
 			return ((char)tree->letter + MOD_ASCII_CODE);
 	}		
@@ -542,11 +536,11 @@ char getCharByHuffman(huffmanNODO* tree, char* temp, int* index)
 int decompressHuffman(NODO* dictionary, char* fileInput, huffmanNODO* tree) {
 	
 	FILE* file = fopen(fileInput, "r");
-	char* temp = (char*) malloc(MAX_STRIGN_HUFFMAN * sizeof(char));;
+	char* temp = (char*) malloc(MAX_STRIGN_HUFFMAN * sizeof(char));
 
 	if (inizializzazioneTabellaHash(dictionary) == ERROR_FIND || file == NULL || temp == NULL) return UNDEFINED;
 
-	while (fgets(temp, MAX_STRIGN_HUFFMAN, file) != NULL)
+	while(fgets(temp, MAX_STRIGN_HUFFMAN, file) != NULL)
 	{
 		char* word = NULL;
 		char* def = NULL;
