@@ -6,6 +6,9 @@
 #include "lib1617.h"
 #include "management.h"
 
+/**
+
+*/
 void getDecompressHuffman(NODO** dictionary, huffmanNODO** tree)
 {
 	*dictionary = (NODO*) malloc(NUM_ELEMENTI * sizeof(NODO));
@@ -151,16 +154,15 @@ int run()
 				case 9:(compressHuffman(dictionary, returnWord("Digitare l'indirizzo nel quale salvare il dizionario"), codetable) == UNDEFINED) ? PRNT_ERROR : PRNT_NOT_ERROR;
 					endMethod(); break;
 				case 10:{
-					char *primoRis, *secondoRis, *terzoRis;
+					char *primoRis = NULL, *secondoRis = NULL, *terzoRis = NULL;
 
 					searchAdvance(dictionary, returnWord("Digitare la parola per la quale si deve efettuare la ricerca avanzata"), &primoRis, &secondoRis, &terzoRis);
 					
-					printf("Le tre parole simili a quela ricercata sono\n1) %s\n2)%s\n%s\n\n", primoRis, secondoRis, terzoRis);
+					printf("Le tre parole simili a quela ricercata sono\n1) %s\n2) %s\n3) %s\n\n", primoRis, secondoRis, terzoRis);
 
 					endMethod(); break;
 				}
-				case 11: checkExit = true;
-					break;
+				case 11: checkExit = true; break;
 			}
 
 			CLEAR;

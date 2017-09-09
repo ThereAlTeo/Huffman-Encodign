@@ -173,4 +173,4 @@ Input:
 Output:
 - un intero corrispondente all'indice di una cella di memoria
 */
-int hashFuction(char* word);
+int hashFunction(char* word);

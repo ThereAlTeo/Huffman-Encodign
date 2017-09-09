@@ -11,6 +11,11 @@ int frequenzaLettereItaliane[] = { 110, 8, 44, 36, 115, 7, 15, 14, 112,
 									3, 10, 64, 24, 69, 97, 29, 4, 63,
 									49, 55, 29, 20, 3, 8, 7, 5, 90 };
 
+int hashFunction(char* word)
+{
+	return (((int)word[0]) % MOD_ASCII_CODE);
+}
+
 int inizializzazioneTabellaHash(NODO* dictionary)
 {
 	if (dictionary != NULL)
@@ -124,7 +129,7 @@ int insertWord(NODO** d, char* word)
 	if (strlen(word) >= MIN_WORD && strlen(word) <= MAX_WORD)
 	{
 		TipoListaChaining nuovo = (TipoListaChaining)malloc(sizeof(CELLA));
-		NODO* tab = &(dictionary[hashFuction(word)]);
+		NODO* tab = &(dictionary[hashFunction(word)]);
 
 		if (nuovo == NULL) return ERROR_FIND;
 
@@ -181,7 +186,7 @@ void finalCanc(TipoListaChaining temp, TipoListaChaining nuovo)
 int cancWord(NODO** d, char* word)
 {
 	NODO* dictionary = *d;
-	NODO* tab = &(dictionary[hashFuction(word)]);
+	NODO* tab = &(dictionary[hashFunction(word)]);
 	TipoListaChaining temp = tab->TestaLis;
 
 	if (temp == NULL) return ERROR_FIND;
@@ -251,7 +256,7 @@ int insertDef(NODO* dictionary, char* word, char* def)
 {
 	if (strlen(def) <= MAX_DEF)
 	{
-		TipoListaChaining temp = dictionary[hashFuction(word)].TestaLis;
+		TipoListaChaining temp = dictionary[hashFunction(word)].TestaLis;
 
 		if (temp != NULL)
 		{
@@ -279,7 +284,7 @@ int insertDef(NODO* dictionary, char* word, char* def)
 
 char* searchDef(NODO* dictionary, char* word)
 {
-	TipoListaChaining temp = dictionary[hashFuction(word)].TestaLis;
+	TipoListaChaining temp = dictionary[hashFunction(word)].TestaLis;
 
 	if (temp != NULL) {
 
@@ -375,14 +380,136 @@ NODO* importDictionary(char* fileInput)
 	return dictionary;
 }
 
-int searchAdvance(NODO* dictionary, char* word, char** primoRis, char** secondoRis, char** terzoRis)
+int minimum(int a, int b, int c)
 {
-	return 0;
+	int min = a;
+
+	if (b < min) min = b;
+	if (c < min) min = c;
+
+	return min;
 }
 
-int hashFuction(char* word)
+/**
+	
+*/
+int Levenshtein_distance(char *x, char *y)
 {
-	return (((int) word[0]) % MOD_ASCII_CODE);
+	int m = strlen(x), n = strlen(y), i, j, distance;
+
+	int *prev = malloc((n + 1) * sizeof(int));
+	int *curr = malloc((n + 1) * sizeof(int));
+	int *tmp = 0;
+
+	for (i = 0; i <= n; i++)
+		prev[i] = i;
+
+	for (i = 1; i <= m; i++) 
+	{
+		curr[0] = i;
+		for (j = 1; j <= n; j++)
+		{
+			if (x[i - 1] != y[j - 1]) 
+			{
+				int k = minimum(curr[j - 1], prev[j - 1], prev[j]);
+				curr[j] = k + 1;
+			}
+			else
+				curr[j] = prev[j - 1];			
+		}
+
+		tmp = prev;
+		prev = curr;
+		curr = tmp;
+
+		memset((void*)curr, 0, sizeof(int) * (n + 1));
+	}
+
+	distance = prev[n];
+
+	free(curr);
+	free(prev);
+
+	return distance;
+
+}
+
+int searchWord(NODO* dictionary, char* word)
+{
+	TipoListaChaining temp = dictionary[hashFunction(word)].TestaLis;
+
+	while (temp != NULL)
+	{
+		if (strcmp(temp->word, word) == 0) return ERROR_FIND;
+		temp = temp->next;
+	}
+
+	return NOT_ERROR;
+}
+
+int searchAdvance(NODO* dictionary, char* word, char** primoRis, char** secondoRis, char** terzoRis)
+{
+	if(countWord(dictionary) ==  0) return UNDEFINED;
+	
+	int distPrimo, distSecondo, distTerzo, ret = searchWord(dictionary, word);
+	bool checkInizialia = true;
+
+	for(int i = 0; i < NUM_ELEMENTI; i++)
+	{
+		TipoListaChaining temp = dictionary[i].TestaLis;
+		
+		if(temp != NULL && strcmp(temp->word, word) == 0) temp = temp->next;
+
+		while(temp != NULL)
+		{
+			int distanza = Levenshtein_distance(temp->word, word);
+
+			if(distanza < 7)
+			{
+				if (checkInizialia)
+				{
+					if (*primoRis == NULL)
+					{
+						*primoRis = temp->word;
+						distPrimo = distanza;
+					}
+					else if (*secondoRis == NULL)
+					{
+						*secondoRis = temp->word;
+						distSecondo = distanza;
+					}
+					else if(*terzoRis == NULL)
+					{
+						*terzoRis = temp->word;
+						distTerzo = distanza;
+						checkInizialia = false;
+					}
+				}
+				else
+				{
+					if (distanza < distPrimo)
+					{
+						*primoRis = temp->word;
+						distPrimo = distanza;
+					}
+					else if (distanza < distSecondo)
+					{
+						*secondoRis = temp->word;
+						distSecondo = distanza;
+					}
+					else if (distanza < distTerzo)
+					{
+						*terzoRis = temp->word;
+						distTerzo = distanza;
+					}
+				}
+			}
+
+			temp = temp->next;
+		}
+	}
+	
+	return ret;
 }
 
 int getFrequesnza(huffmanNODO* temp) {

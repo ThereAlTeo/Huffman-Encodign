@@ -5,8 +5,8 @@
 #include "management.h"
 
 /**
-Funzione che interrompe temporaneamente l'esecuzione del programma
-Per rendere la funzione riutilizzabile, durante la chiamata, deve essere specificato il tempo di interruzione.
+	Funzione che interrompe temporaneamente l'esecuzione del programma
+	Per rendere la funzione riutilizzabile, durante la chiamata, deve essere specificato il tempo di interruzione.
 */
 void stop(int val) {
 	_sleep(val);
