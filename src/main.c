@@ -7,7 +7,8 @@
 #include "management.h"
 
 /**
-
+	 Funzione.
+	 Gestisce la fase di DECOMPRESSIONE di Huffman.
 */
 void getDecompressHuffman(NODO** dictionary, huffmanNODO** tree)
 {
@@ -19,7 +20,9 @@ void getDecompressHuffman(NODO** dictionary, huffmanNODO** tree)
 }
 
 /**
-
+	Funzione.
+	 Gestisce la fase di importFile. 
+	 L'utente deve specificare che tipo di file deve essere importato. 
 */
 void getImportDictionary(NODO** dictionary, huffmanNODO** tree)
 {
@@ -45,8 +48,9 @@ void getImportDictionary(NODO** dictionary, huffmanNODO** tree)
 		getDecompressHuffman(dictionary, tree);
 }
 
-/*
-
+/**
+	Funzione.
+	Viengono riportate le operazioni base che il programma deve eseguire.
 */
 void primaryFunction(NODO** aux)
 {
@@ -89,7 +93,8 @@ void primaryFunction(NODO** aux)
 }
 
 /**
-
+	Funzione.
+	Gestisce l'intera esecuzione del programma e puo' essere ritenuto il motore dello stesso.
 */
 int run()
 {
@@ -172,6 +177,9 @@ int run()
 	return NOT_ERROR;
 }
 
+/**
+	Punto di inizio del programma.
+*/
 int main()
 {
 	run();

@@ -1,17 +1,21 @@
-#define MAX_DEF 50
-#define MAX_WORD 20
-#define MIN_WORD 2
-#define MOD_ASCII_CODE 97
-#define NOT_ERROR 0
-#define ERROR_FIND 1
-#define UNDEFINED -1
-#define MAX_STRING 78
-#define NUM_ELEMENTI 27
-#define BYTE 8
+#include "heap.h"
+				
+#define MAX_DEF 50					/** MASSIMO NUMERO DI CARATTERI PER OGNI DEFINIZIONE **/
+#define MAX_WORD 20					/** MASSIMO NUMERO DI CARATTERI PER OGNI PAROLA **/
+#define MIN_WORD 2					/** MINIMO NUMERO DI CARATTERI PER OGNI PAROLA **/
+#define MOD_ASCII_CODE 97			/** NUMERO ASCII PER LA LETTERA 'a' [UTILIZZATA PER hashFunction()] **/
+#define NOT_ERROR 0					/** VALORE DI RITORNO IN ASSENZA DI ERRORI **/
+#define ERROR_FIND 1				/** VALORE DI RITORNO IN PRESENZA DI ERRORI **/
+#define UNDEFINED -1				/** VALORE DI RITORNO IN CASO DI ANOMALIE **/
+#define MAX_STRING 78				
+#define NUM_ELEMENTI 27				/** NUMERO DI CELLE IN 'dictionary' (una per ogni lettera dell'alfabeto) **/
+#define BYTE 8						/** NUMERO DI BIT PER FORMARE UN BYTE **/
 #define MAX_STRIGN_HUFFMAN 560
 
-#include "heap.h"
-
+/**
+	Struttura dati.
+	Rappresenta il singolo nodo della lista che comprende i vocaboli. 
+*/
 typedef struct {
 	char* word;
 	char* def;
@@ -21,14 +25,25 @@ typedef struct {
 
 typedef CELLA *TipoListaChaining;
 
+/**
+	Struttura dati.
+	Rappresenta una singola cella dell'array, imprementatato come HashTable.
+*/
 typedef struct {
 	TipoListaChaining TestaLis;
 	int countWord;
 }NODO;
 
+/**
+Input:
+-dictionary: la struttura dati in cui avete memorizzato il dizionario
+Output:
+-0 in caso di assenza di errori
+-1 in caso di presenza di errori
+*/
 int inizializzazioneTabellaHash(NODO* dictionary);
 
-/*
+/**
 Input:
 -nameFile: contiene il nome del file di testo da cui viene creato un primo dizionario con definizioni assenti, ad esempio Text.txt
 Output:
@@ -39,7 +54,7 @@ Si ritorni in caso di un qualsiasi tipo di errore NULL. Specificare nella relazi
 */
 NODO* createFromFile(char* nameFile);
 
-/*
+/**
 Input:
 -dictionary: la struttura dati in cui avete memorizzato il dizionario
 La funzione deve stampare le parole del dizionario una per riga con a fianco la propria definizione, se presente,
@@ -52,7 +67,7 @@ ESATTAMENTE in questo modo:
 */
 void printDictionary(NODO*  dictionary);
 
-/*
+/**
 Input:
 -dictionary: la struttura dati in cui avete memorizzato il dizionario
 Output:
@@ -60,7 +75,7 @@ Output:
 */
 int countWord(NODO* dictionary);
 
-/*
+/**
 Input:
 - dictionary: la struttura dati in cui avete memorizzato il dizionario
 - word: la parola da inserire nel dizionario , senza la definizione
@@ -70,7 +85,7 @@ Output:
 */
 int insertWord(NODO** dictionary, char* word);
 
-/*
+/**
 Input:
 -dictionary: la struttura dati in cui avete memorizzato il dizionario
 -word: la parola da cancellare nel dizionario
@@ -80,7 +95,7 @@ Output:
 */
 int cancWord(NODO** dictionary, char* word);
 
-/*
+/**
 Input:
 -dictionary: la struttura dati in cui avete memorizzato il dizionario
 -index: indice che indica la iesima parola ( secondo l'ordine del dizionario)
@@ -90,7 +105,7 @@ Output:
 */
 char* getWordAt(NODO* dictionary, int index);
 
-/*
+/**
 Input:
 -dictionary: la struttura dati in cui avete memorizzato il dizionario
 -word: la parola per cui si deve inserire la definizione
@@ -103,7 +118,7 @@ nel caso in cui una definizione sia già presente, questa deve essere totalmente 
 */
 int insertDef(NODO* dictionary, char* word, char* def);
 
-/*
+/**
 Input:
 -dictionary: la struttura dati in cui avete memorizzato il dizionario
 -word: la parola per cui si deve cercare la definizione
@@ -112,7 +127,7 @@ Output:
 */
 char* searchDef(NODO* dictionary, char* word);
 
-/*
+/**
 Input:
 -dictionary: la struttura dati in cui avete memorizzato il dizionario
 -fileOutput: il nome del file in cui si vuole salvare il dizionario
@@ -122,7 +137,7 @@ Output:
 */
 int saveDictionary(NODO* dictionary, char* fileOutput);
 
-/*
+/**
 Input:
 -fileInput: il nome del file contenente il dizionario [stesso formato usato nel salvataggio e nella stampa]
 Output:
@@ -130,7 +145,7 @@ Output:
 */
 NODO* importDictionary(char *fileInput);
 
-/*
+/**
 Input:
 -dictionary: la struttura dati in cui avete memorizzato il dizionario
 -word: la parola per cui si vuole cercare la presenza
@@ -143,8 +158,19 @@ Output:
 */
 int searchAdvance(NODO* dictionary, char* word, char** primoRis, char** secondoRis, char** terzoRis);
 
+/**
+Output:
+-il puntatore alla testa dell'albero di Huffman.
+*/
 huffmanNODO* buildHuffmanTree();
 
+/**
+Input:
+-tree: puntatore alla testa dell'albero di Huffman.
+-codeTable: puntatore ad un array di caratteri.
+-Code: variabile ausiliaria.
+-Level: livello di profondità del nodo attualmente visitato.
+*/
 void createTable(huffmanNODO *tree, char* codeTable[], char* Code, int Level);
 
 /*

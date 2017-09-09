@@ -6,7 +6,11 @@
 
 #include "lib1617.h"
 
-/* 81 = 8.1%, 128 = 12.8% and so on. The 27th frequency is the space. */
+/**
+	Array Globale.
+	Contiene la percentuale di presenza delle sigolo lettere nelle parole del dizionario Italiano.
+	La posizione 27 e' occupata del valore relativo allo spazio.
+*/
 int frequenzaLettereItaliane[] = { 110, 8, 44, 36, 115, 7, 15, 14, 112,
 									3, 10, 64, 24, 69, 97, 29, 4, 63,
 									49, 55, 29, 20, 3, 8, 7, 5, 90 };
@@ -108,6 +112,9 @@ int countWord(NODO* dictionary)
 	return somma;
 }
 
+/**
+	Funzione AUSILIARIA.
+*/
 char* getWord(TipoListaChaining node)
 {
 	if (node != NULL)
@@ -116,7 +123,10 @@ char* getWord(TipoListaChaining node)
 		return NULL;
 }
 
-void finalChain(TipoListaChaining nuovo, TipoListaChaining temp)
+/**
+	Funzione AUSILIARIA.
+*/
+void auxFunction(TipoListaChaining temp, TipoListaChaining nuovo)
 {
 	if (temp != NULL)
 		temp->prec = nuovo;
@@ -167,7 +177,7 @@ int insertWord(NODO** d, char* word)
 
 		nuovo->next = temp->next;
 		nuovo->prec = temp;
-		finalChain(nuovo, temp->next);
+		auxFunction(temp->next, nuovo);
 		temp->next = nuovo;
 		tab->countWord++;
 
@@ -175,12 +185,6 @@ int insertWord(NODO** d, char* word)
 	}
 
 	return ERROR_FIND;
-}
-
-void finalCanc(TipoListaChaining temp, TipoListaChaining nuovo)
-{
-	if (temp != NULL)
-		temp->prec = nuovo;
 }
 
 int cancWord(NODO** d, char* word)
@@ -194,7 +198,7 @@ int cancWord(NODO** d, char* word)
 	if (strcmp(temp->word, word) == 0)
 	{
 		tab->TestaLis = temp->next;
-		finalCanc(temp->next, NULL);
+		auxFunction(temp->next, NULL);
 		tab->countWord--;
 
 		free(temp);
@@ -210,7 +214,7 @@ int cancWord(NODO** d, char* word)
 		{
 			TipoListaChaining canc = temp->next;
 			temp->next = canc->next;
-			finalCanc(temp->next, temp);
+			auxFunction(temp->next, temp);
 			tab->countWord--;
 
 			free(canc);
@@ -380,6 +384,10 @@ NODO* importDictionary(char* fileInput)
 	return dictionary;
 }
 
+/**
+	Funzione.
+	Restituisce il minore dei tre valori pessati per input.
+*/
 int minimum(int a, int b, int c)
 {
 	int min = a;
@@ -391,7 +399,8 @@ int minimum(int a, int b, int c)
 }
 
 /**
-	
+	Funzione.
+	Restituisce la distnaza di Levenshtein di due parole.
 */
 int Levenshtein_distance(char *x, char *y)
 {
@@ -434,6 +443,14 @@ int Levenshtein_distance(char *x, char *y)
 
 }
 
+/**
+Input:
+- dictionary: la struttura dati in cui avete memorizzato il dizionario
+- word: la parola da cercare nel dizionare per verificare la sua presenza.
+Output:
+- 0 in caso di assenza 
+- 1 in caso di presenza 
+*/
 int searchWord(NODO* dictionary, char* word)
 {
 	TipoListaChaining temp = dictionary[hashFunction(word)].TestaLis;
@@ -512,15 +529,20 @@ int searchAdvance(NODO* dictionary, char* word, char** primoRis, char** secondoR
 	return ret;
 }
 
+/**
+	Funzione AUSILIARIA.
+*/
 int getFrequesnza(huffmanNODO* temp) {
 	return temp->frequenza;
 }
 
+/**
+	Funzione AUSILIARIA.
+*/
 int getLetter(huffmanNODO* temp) {
 	return temp->letter;
 }
 
-/*builds the huffman tree and returns its address by reference*/
 huffmanNODO* buildHuffmanTree()
 {
 	int heapsize = NUM_ELEMENTI - 1;
@@ -556,7 +578,6 @@ huffmanNODO* buildHuffmanTree()
 	return extractMin(array, &heapsize);
 }
 
-/* builds the table with the bits for each letter. 1 stands for binary 0 and 2 for binary 1 (used to facilitate arithmetic)*/
 void createTable(huffmanNODO *tree, char* codeTable[], char* Code, int Level) {
 	
 	if (tree->left == NULL && tree->right == NULL) {
@@ -583,7 +604,6 @@ void createTable(huffmanNODO *tree, char* codeTable[], char* Code, int Level) {
 	}
 }
 
-/*function to compress the input*/
 int compressHuffman(NODO* dictionary, char* fileOutput, char* codeTable[]) {
 
 	int originalBits = 0, compressedBits = 0;
@@ -641,6 +661,10 @@ int compressHuffman(NODO* dictionary, char* fileOutput, char* codeTable[]) {
 	return NOT_ERROR;
 }
 
+/**
+	Funzione.
+	Restituisce un carattere. 
+*/
 char getCharByHuffman(huffmanNODO* tree, char* temp, int* index)
 {
 	if (tree->left == NULL && tree->right == NULL) {
@@ -659,7 +683,6 @@ char getCharByHuffman(huffmanNODO* tree, char* temp, int* index)
 	}
 }
 
-/*function to decompress the input*/
 int decompressHuffman(NODO* dictionary, char* fileInput, huffmanNODO* tree) {
 	
 	FILE* file = fopen(fileInput, "r");

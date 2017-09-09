@@ -17,16 +17,21 @@ void warning(char valore[]);
 void endMethod();
 
 /**
-	Funzione eseguita quando si vogliono effettuare domande all'utente per comprendere quale comportamento deve avere il programma
+	Funzione eseguita quando si vogliono effettuare domande all'utente per 
+	comprendere quale comportamento deve avere il programma
 */
 bool checkRequest(char valore[]);
 
 /**
-
+Input:
+-valore: stringa di caratteri contenete una richiesta.
+Output:
+-stringa di caratteri contenente la risposta.
 */
 char* returnWord(char valore[]);
 
 /**
-
+	Funzione.
+	Viene visualizzato un menu' dal quale e' possibile selezionare l'azione da dover svolgere.
 */
 int menuIniziale();

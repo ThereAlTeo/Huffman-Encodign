@@ -3,18 +3,34 @@
 
 #include "heap.h"
 
+/**
+	Funzione.
+	Restituisce l'index del FIGLIO SINISTRO di un nodo dell'HEAP.
+*/
 int leftSon(int index) {
 	return (index*2) + 1;
 }
 
+/**
+	Funzione.
+	Restituisce l'index del FIGLIO DESTRO di un nodo dell'HEAP.
+*/
 int rightSon(int index) {
 	return (index*2) + 2;
 }
 
+/**
+	Funzione.
+	Restituisce l'index del PADRE di un nodo dell'HEAP.
+*/
 int parent(int index) {
 	return (int) (index-1)/2;
 }
 
+/**
+	Funzione.
+	Realizzata poichè a volta si necessita di copiare le informazioni di un nodo in un altro.
+*/
 void assegnamento(huffmanNODO* first, huffmanNODO* second)
 {
 	first->frequenza = second->frequenza;
@@ -23,6 +39,10 @@ void assegnamento(huffmanNODO* first, huffmanNODO* second)
 	first->left = second->left;
 }
 
+/**
+	Funzione.
+	Scambia le informazioni di due nodi.
+*/
 void swap(huffmanNODO* first, huffmanNODO* second)
 {
 	huffmanNODO temp;
@@ -32,6 +52,11 @@ void swap(huffmanNODO* first, huffmanNODO* second)
 	assegnamento(first, &temp);
 }
 
+/**
+	Funzione.
+	Ad ogni invocazione si posiziona il nodo in base all'informazione che continene,
+	in modo tale da conservare le caratteristiche dell'HEAP.
+*/
 void heapify(huffmanNODO* array, int index, int lenght)
 {
 	int l = leftSon(index), r = rightSon(index), largest;
